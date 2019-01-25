@@ -1,0 +1,151 @@
+body {
+    min-height: 1000px;
+    padding-top: 100px;
+    font-family: Roboto, sans-serif;
+}
+
+.page-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    background-color: #212121;
+    transition: 1s;
+    padding: 0 100px;
+    box-sizing: border-box;
+}
+
+.page-header--scrolled {
+    height: 100px;
+}
+
+.page-header__banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 1s;
+}
+
+.page-header--scrolled .page-header__banner {
+    opacity: 0;
+}
+
+.page-header__logo {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 180px;
+    transform: translate(-50%, -50%);
+    transition: 1s;
+    filter: invert(1);
+    mix-blend-mode: overlay;
+}
+
+.page-header__logo:hover,
+.page-header__logo:focus {
+    filter: invert(1) drop-shadow(0 0 6px #ffffff);
+}
+
+.page-header--scrolled .page-header__logo {
+    top: 10px;
+    left: 100px;
+    width: 80px;
+    transform: none;
+    mix-blend-mode: screen;
+}
+
+.logo__image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    transition: 1s;
+}
+
+.page-header__nav {
+    float: right;
+    transform: translatex(100px);
+    opacity: 0;
+    visibility: hidden;
+    transition: 1s;
+}
+
+.page-header--scrolled .page-header__nav {
+    transform: translatex(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.main-nav {
+    position: relative;
+}
+
+.main-nav__list {
+    position: relative;
+    display: flex;
+    margin: 0;
+    padding: 31px 0;
+    list-style: none;
+    transition: 1s;
+}
+
+.main-nav__link {
+    display: block;
+    color: #fff;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+
+.main-nav__item--active .main-nav__link {
+    color: #212121;
+    background-color: #fff;
+}
+
+.page-content {
+    padding: 100px 10%;
+    font-size: 20px;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.page-content h1,
+.page-content h2,
+.page-content h3 {
+    margin: 0;
+}
+
+.page-content h1+*,
+.page-content h2+*,
+.page-content h3+* {
+    margin-top: 15px;
+}
+
+.page-content h1 {
+    font-size: 48px;
+}
+
+.page-content h2 {
+    font-size: 38px;
+}
+
+.page-content h3 {
+    font-size: 30px;
+}
+
+.page-content *+* {
+    margin-top: 25px;
+}
+
+.page-content *+h2 {
+    margin-top: 80px;
+    margin-bottom: 0;
+}
+
+.page-content *+h3 {
+    margin-top: 65px;
+    margin-bottom: 0;
+}
