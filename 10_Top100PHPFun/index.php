@@ -26,3 +26,7 @@ echo "in_array(): " . in_array('dog', $arr) . BR;
 // 4.5 array_search()
 echo "array_search(): " . array_search('dog', $arr) .BR;
 
+// 5. explode()
+$text = "red, orange, black, white, blue, pink";
+$text_array = explode(", ", $text, 3);
+print_r($text_array);
