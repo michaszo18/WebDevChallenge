@@ -2,6 +2,9 @@
 
 class ShopProduct
 {
+    const AVAILABLE = 0;
+    const OUT_OF_STOCK = 1;
+
     private $title = "bez tytułu";
     private $producerMainName = "nazwisko";
     private $producerFirstName = "imię";
@@ -152,27 +155,52 @@ class BookProduct extends ShopProduct
 // Uwaga Metodę write() można by dodać bezpośrednio do klasy ShopProduct. Nie zrobimy tego jednak ze względu na
 // podział odpowiedzialności. Klasa ShopProduct ma realizować zadania zarządzania danymi produktów; za wypisywanie
 // danych o produktach odpowiedzialna jest klasa ShopProductWriter.
-class ShopProductWriter
+abstract class ShopProductWriter
 {
-
-    private $products = array();
+    protected $products = array();
 
     public function addProduct(ShopProduct $shopProduct)
     {
         $this->products[] = $shopProduct;
     }
 
+    abstract public function write();
+}
+
+class XmlProductWriter extends ShopProductWriter
+{
     public function write()
     {
-        $str = "";
+        $writer = new XMLWriter();
+        $writer->openMemory();
+        $writer->startDocument('1.0', 'UTF-8');
+        $writer->startElement("products");
+
         foreach ($this->products as $shopProduct) {
-            $str .= $shopProduct->getProducer() . " - ";
-            $str .= $shopProduct->getTitle();
-            $str .= " ({$shopProduct->getPrice()}PLN) <br>";
+            $writer->startElement("product");
+            $writer->writeAttribute("title", $shopProduct->getTitle());
+            $writer->startElement("summary");
+            $writer->text($shopProduct->getSummaryLine());
+            $writer->endElement(); // element summary
+            $writer->endElement(); // element product
         }
-        print $str;
+
+        $writer->endElement(); // element products
+        $writer->endDocument();
+        echo $writer->flush();
     }
 }
+
+class TextProductWriter extends ShopProductWriter {
+    public function write() {
+        $str = "PRODUCTS: <br>";
+        foreach ($this->products as $shopProduct) {
+            $str .= $shopProduct->getSummaryLine() . "<br>";
+        }
+        echo $str;
+    }
+}
+
 
 
 $product1 = new BookProduct("Dziady", "Adam", "Mickiewicz", 40.99, 760);
@@ -182,24 +210,27 @@ $product2 = new CdProduct("Dolina klaunoow", "Trzeci", "Wymiar", 29.99, 50);
 // var_dump($product1);
 // print "Autor: {$product1->getProducer()}\n";
 
-// $writer->write($product1);
-// $writer->write($product2);
-
 $product2->setDiscount(15);
 // echo "product2 -> getPrice: " . $product2->getPrice() . "<br>";
-
 // echo $product1->getSummaryLine() . "<br>";
 // echo $product2->getSummaryLine();
-$writer = new ShopProductWriter();
-$writer->addProduct($product1);
-$writer->addProduct($product2);
+$textWriter = new TextProductWriter();
+$XmlProductWriter = new XmlProductWriter();
+
+$textWriter->addProduct($product1);
+$textWriter->addProduct($product2);
+
+$XmlProductWriter->addProduct($product1);
+$XmlProductWriter->addProduct($product2);
 
 $dsn = "sqlite:oop.db";
 $pdo = new PDO($dsn, null, null);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
 $obj = ShopProduct::getInstance(2, $pdo);
 
-$writer->addProduct($obj);
+$textWriter->addProduct($obj);
 
-$writer->write();
+// $textWriter->write();
+$XmlProductWriter->write();
+
+// print ShopProduct::AVAILABLE;
