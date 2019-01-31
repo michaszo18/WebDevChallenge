@@ -1,7 +1,46 @@
 <?php
+// Cechy typowe są co prawda użyteczne, ale nie wpływają na typ klasy, do której są włączane . Jeśli więc dołączymy
+// cechę typową IdentityTrait do wielu klas, nie będą to klasy zgodne co do typu, co umożliwiłoby ich grupowe
+// określanie w oznaczeniach typów parametrów metod innych klas .
+// Na szczęście cechy typowe współgrają z interfejsami . Można więc zdefiniować interfejs wymagający
+// metod generateId(), a następnie zadeklarować klasę ShopProduct jako implementującą ten interfejs(za pośrednictwem cechy typowej) :
+interface IdentityObject {
+    public function generateId();
+}
 
-class ShopProduct
+interface Chargeable
 {
+    public function getPrice();
+}
+
+trait PriceUtilities {
+    private $taxrate = 17;
+
+    function calculateTax($price)
+    {
+        return (($this->taxrate/100) * $price);
+    }
+}
+
+trait IdentityTrait {
+    public function generateId() {
+        return uniqid();
+    }
+}
+
+abstract class Service {
+
+}
+
+class UtilityService extends Service {
+    use PriceUtilities;
+}
+
+
+class ShopProduct implements Chargeable, IdentityObject
+{
+    use PriceUtilities, IdentityTrait;
+
     const AVAILABLE = 0;
     const OUT_OF_STOCK = 1;
 
@@ -191,8 +230,12 @@ class XmlProductWriter extends ShopProductWriter
     }
 }
 
-class TextProductWriter extends ShopProductWriter {
-    public function write() {
+class TextProductWriter extends ShopProductWriter
+{
+    use PriceUtilities;
+
+    public function write()
+    {
         $str = "PRODUCTS: <br>";
         foreach ($this->products as $shopProduct) {
             $str .= $shopProduct->getSummaryLine() . "<br>";
@@ -230,7 +273,9 @@ $obj = ShopProduct::getInstance(2, $pdo);
 
 $textWriter->addProduct($obj);
 
-// $textWriter->write();
-$XmlProductWriter->write();
+$textWriter->write();
+// $XmlProductWriter->write();
 
+echo $product1->calculateTax($product1->getPrice()) . "<br>";
+echo $product1->generateId() . "<br>";
 // print ShopProduct::AVAILABLE;
